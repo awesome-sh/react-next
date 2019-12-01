@@ -1,5 +1,5 @@
 import Document, { DocumentContext } from 'next/document';
-import { ServerStyleSheet } from 'styled-components';
+import { createGlobalStyle, ServerStyleSheet } from 'styled-components';
 
 class CustomDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
@@ -9,7 +9,13 @@ class CustomDocument extends Document {
     try {
       ctx.renderPage = () =>
         originalRenderPage({
-          enhanceApp: App => props => sheet.collectStyles(<App {...props} />)
+          enhanceApp: App => props =>
+            sheet.collectStyles(
+              <>
+                <GlobalStyle />
+                <App {...props} />
+              </>
+            )
         });
 
       const initialProps = await Document.getInitialProps(ctx);
@@ -32,3 +38,14 @@ class CustomDocument extends Document {
 }
 
 export default CustomDocument;
+
+const GlobalStyle = createGlobalStyle`
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: white;
+  }
+`;
